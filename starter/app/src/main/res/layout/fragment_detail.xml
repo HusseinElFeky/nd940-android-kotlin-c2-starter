@@ -7,7 +7,8 @@
 
         <variable
             name="asteroid"
-            type="com.udacity.asteroidradar.Asteroid" />
+            type="com.udacity.asteroidradar.models.Asteroid" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -58,6 +59,7 @@
                         android:text="@{asteroid.closeApproachDate}"
                         android:textColor="@color/default_text_color"
                         tools:text="2020-02-01" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -87,6 +89,7 @@
                             android:textColor="@color/default_text_color"
                             app:astronomicalUnitText="@{asteroid.absoluteMagnitude}"
                             tools:text="25.126 au" />
+
                     </LinearLayout>
 
                     <ImageView
@@ -147,7 +150,9 @@
                     tools:text="0.0924 au" />
 
             </LinearLayout>
+
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
