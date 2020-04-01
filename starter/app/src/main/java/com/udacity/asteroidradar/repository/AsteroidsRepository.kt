@@ -22,6 +22,9 @@ class AsteroidsRepository(asteroidDao: AsteroidDao) {
     suspend fun saveAsteroid(asteroid: Asteroid) =
         localDataSource.saveAsteroid(asteroid)
 
+    suspend fun deleteOldAsteroids() =
+        localDataSource.deleteOldAsteroids()
+
     fun getAsteroidsRemotely(startDate: String, endDate: String): Flow<List<Asteroid>> =
         remoteDataSource.getAsteroids(startDate, endDate)
 

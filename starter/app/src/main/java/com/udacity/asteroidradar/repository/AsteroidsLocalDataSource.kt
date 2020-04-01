@@ -23,4 +23,7 @@ class AsteroidsLocalDataSource(private val asteroidDao: AsteroidDao) {
 
     suspend fun saveAsteroid(asteroid: Asteroid) =
         asteroidDao.insert(asteroid)
+
+    suspend fun deleteOldAsteroids() =
+        asteroidDao.deleteAsteroidsBefore(DateUtils.getToday().time)
 }

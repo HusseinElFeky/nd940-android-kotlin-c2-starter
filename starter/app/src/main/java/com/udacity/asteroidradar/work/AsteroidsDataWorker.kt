@@ -20,6 +20,7 @@ class AsteroidsDataWorker(appContext: Context, params: WorkerParameters) :
         val repository = AsteroidsRepository(database.asteroidDao())
 
         try {
+            repository.deleteOldAsteroids()
             repository.getAsteroidsRemotely(
                 DateUtils.getToday().toFormattedString(),
                 DateUtils.getDateAfter(Constants.DEFAULT_END_DATE_DAYS).toFormattedString()
