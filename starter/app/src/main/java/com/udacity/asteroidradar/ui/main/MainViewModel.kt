@@ -12,6 +12,7 @@ import com.udacity.asteroidradar.models.PictureOfDay
 import com.udacity.asteroidradar.persistence.AppRoomDatabase.Companion.getDatabase
 import com.udacity.asteroidradar.repository.AsteroidsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onStart
@@ -21,7 +22,7 @@ import timber.log.Timber
 @ExperimentalCoroutinesApi
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private lateinit var asteroidsRepository: AsteroidsRepository
+    private var asteroidsRepository = AsteroidsRepository(getDatabase(application).asteroidDao())
 
     private val _asteroidsLiveData = MutableLiveData<List<Asteroid>>()
     val asteroidsLiveData: LiveData<List<Asteroid>>
@@ -40,22 +41,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = _imageStateLiveData
 
     init {
-        asteroidsRepository = AsteroidsRepository(getDatabase(application).asteroidDao())
-
         getWeeklyAsteroids()
         getImageOfTheDay()
     }
 
-    private fun getWeeklyAsteroids() = viewModelScope.launch {
-        asteroidsRepository.getWeeklyAsteroids().onStart {
-            _asteroidsStateLiveData.postValue(NetworkState.LOADING)
-        }.catch {
-            Timber.e(it)
-            _asteroidsStateLiveData.postValue(NetworkState.error(Constants.FAILED_TO_LOAD_ASTEROIDS))
-        }.collect {
-            _asteroidsLiveData.postValue(it)
-            _asteroidsStateLiveData.postValue(NetworkState.LOADED)
-        }
+    private suspend fun Flow<List<Asteroid>>.observeChanges() = onStart {
+        _asteroidsStateLiveData.postValue(NetworkState.LOADING)
+    }.catch {
+        Timber.e(it)
+        _asteroidsStateLiveData.postValue(NetworkState.error(Constants.FAILED_TO_LOAD_ASTEROIDS))
+    }.collect {
+        _asteroidsLiveData.postValue(it)
+        _asteroidsStateLiveData.postValue(NetworkState.LOADED)
+    }
+
+    fun getWeeklyAsteroids() = viewModelScope.launch {
+        asteroidsRepository.getWeeklyAsteroids().observeChanges()
+    }
+
+    fun getTodayAsteroids() = viewModelScope.launch {
+        asteroidsRepository.getTodayAsteroids().observeChanges()
+    }
+
+    fun getSavedAsteroids() = viewModelScope.launch {
+        asteroidsRepository.getSavedAsteroids().observeChanges()
     }
 
     private fun getImageOfTheDay() = viewModelScope.launch {
