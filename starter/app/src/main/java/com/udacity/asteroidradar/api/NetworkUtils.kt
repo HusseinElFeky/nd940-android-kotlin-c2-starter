@@ -26,10 +26,12 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
 
             val closeApproachData = asteroidJson
                 .getJSONArray("close_approach_data").getJSONObject(0)
+            val epochDateCloseApproach = closeApproachData.getLong("epoch_date_close_approach")
             val relativeVelocity = closeApproachData.getJSONObject("relative_velocity")
                 .getDouble("kilometers_per_second")
             val distanceFromEarth = closeApproachData.getJSONObject("miss_distance")
                 .getDouble("astronomical")
+
             val isPotentiallyHazardous = asteroidJson
                 .getBoolean("is_potentially_hazardous_asteroid")
 
@@ -37,6 +39,7 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
                 id,
                 codename,
                 formattedDate,
+                epochDateCloseApproach,
                 absoluteMagnitude,
                 estimatedDiameter,
                 relativeVelocity,

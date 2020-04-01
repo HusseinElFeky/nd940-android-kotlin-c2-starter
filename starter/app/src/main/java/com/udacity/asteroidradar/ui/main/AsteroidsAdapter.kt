@@ -10,7 +10,7 @@ internal class AsteroidsAdapter(
     private val onItemClicked: (Asteroid) -> Unit
 ) : RecyclerView.Adapter<AsteroidsAdapter.AsteroidViewHolder>() {
 
-    private var asteroids = ArrayList<Asteroid>()
+    private var asteroids = emptyList<Asteroid>()
 
     override fun getItemCount(): Int = asteroids.size
 
@@ -27,7 +27,7 @@ internal class AsteroidsAdapter(
         holder.bind(asteroids[position])
     }
 
-    internal fun setAsteroids(asteroids: ArrayList<Asteroid>) {
+    internal fun setAsteroids(asteroids: List<Asteroid>) {
         this.asteroids = asteroids
         notifyDataSetChanged()
     }

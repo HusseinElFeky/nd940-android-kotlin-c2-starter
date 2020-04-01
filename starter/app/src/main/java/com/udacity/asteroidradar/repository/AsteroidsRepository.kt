@@ -1,32 +1,30 @@
 package com.udacity.asteroidradar.repository
 
-import com.udacity.asteroidradar.api.NasaApi
-import com.udacity.asteroidradar.api.RetrofitClient.getClient
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.models.Asteroid
 import com.udacity.asteroidradar.models.PictureOfDay
+import com.udacity.asteroidradar.persistence.AsteroidDao
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import org.json.JSONObject
 
-object AsteroidsRepository {
+class AsteroidsRepository(asteroidDao: AsteroidDao) {
 
-    private val nasaApi = getClient().create(NasaApi::class.java)
+    private val localDataSource = AsteroidsLocalDataSource(asteroidDao)
+    private val remoteDataSource = AsteroidsRemoteDataSource()
 
-    fun getAsteroids(startDate: String, endDate: String): Flow<ArrayList<Asteroid>> = flow {
-        emit(
-            parseAsteroidsJsonResult(
-                JSONObject(
-                    nasaApi.getAsteroids(
-                        startDate,
-                        endDate
-                    )
-                )
-            )
-        )
-    }
+    fun getWeeklyAsteroids(): Flow<List<Asteroid>> =
+        localDataSource.getWeeklyAsteroids()
 
-    fun getImageOfTheDay(): Flow<PictureOfDay> = flow {
-        emit(nasaApi.getImageOfTheDay())
-    }
+    fun getTodayAsteroids(): Flow<List<Asteroid>> =
+        localDataSource.getTodayAsteroids()
+
+    fun getSavedAsteroids(): Flow<List<Asteroid>> =
+        localDataSource.getSavedAsteroids()
+
+    suspend fun saveAsteroid(asteroid: Asteroid) =
+        localDataSource.saveAsteroid(asteroid)
+
+    fun getAsteroidsRemotely(startDate: String, endDate: String): Flow<List<Asteroid>> =
+        remoteDataSource.getAsteroids(startDate, endDate)
+
+    fun getImageOfTheDay(): Flow<PictureOfDay> =
+        remoteDataSource.getImageOfTheDay()
 }
