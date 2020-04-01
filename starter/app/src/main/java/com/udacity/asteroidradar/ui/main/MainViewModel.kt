@@ -1,5 +1,73 @@
 package com.udacity.asteroidradar.ui.main
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.udacity.asteroidradar.common.*
+import com.udacity.asteroidradar.models.Asteroid
+import com.udacity.asteroidradar.models.PictureOfDay
+import com.udacity.asteroidradar.repository.AsteroidsRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.util.*
 
-class MainViewModel : ViewModel()
+@ExperimentalCoroutinesApi
+class MainViewModel : ViewModel() {
+
+    private val _asteroidsLiveData = MutableLiveData<ArrayList<Asteroid>>()
+    val asteroidsLiveData: LiveData<ArrayList<Asteroid>>
+        get() = _asteroidsLiveData
+
+    private val _asteroidsStateLiveData = MutableLiveData<NetworkState>()
+    val asteroidsStateLiveData: LiveData<NetworkState>
+        get() = _asteroidsStateLiveData
+
+    private val _imageOfTheDayLiveData = MutableLiveData<PictureOfDay>()
+    val imageOfTheDayLiveData: LiveData<PictureOfDay>
+        get() = _imageOfTheDayLiveData
+
+    private val _imageStateLiveData = MutableLiveData<NetworkState>()
+    val imageStateLiveData: LiveData<NetworkState>
+        get() = _imageStateLiveData
+
+    init {
+        getAsteroids(
+            getToday().toFormattedString(),
+            getDateAfter(Constants.DEFAULT_END_DATE_DAYS).toFormattedString()
+        )
+
+        getImageOfTheDay()
+    }
+
+    private fun getAsteroids(startDate: String, endDate: String) = viewModelScope.launch {
+        AsteroidsRepository.getAsteroids(startDate, endDate).onStart {
+            _asteroidsStateLiveData.postValue(NetworkState.LOADING)
+        }.catch {
+            Timber.e(it)
+            _asteroidsStateLiveData.postValue(NetworkState.error(Constants.FAILED_TO_LOAD_ASTEROIDS))
+        }.collect {
+            _asteroidsLiveData.postValue(it)
+            _asteroidsStateLiveData.postValue(NetworkState.LOADED)
+        }
+    }
+
+    private fun getImageOfTheDay() = viewModelScope.launch {
+        AsteroidsRepository.getImageOfTheDay().onStart {
+            _imageStateLiveData.postValue(NetworkState.LOADING)
+        }.catch {
+            Timber.e(it)
+            _imageStateLiveData.postValue(NetworkState.error(Constants.FAILED_TO_LOAD_IOD))
+        }.collect {
+            _imageOfTheDayLiveData.postValue(it)
+        }
+    }
+
+    fun setImageState(networkState: NetworkState) {
+        _imageStateLiveData.postValue(networkState)
+    }
+}

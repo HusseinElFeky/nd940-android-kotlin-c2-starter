@@ -7,4 +7,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="TextTitle" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="TextBody" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_grey</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
 </resources>
