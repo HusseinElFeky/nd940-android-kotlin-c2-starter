@@ -17,6 +17,7 @@ object DateUtils {
 
     fun getToday(): Date {
         return Calendar.getInstance().apply {
+            timeZone = TimeZone.getTimeZone("UTC")
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)

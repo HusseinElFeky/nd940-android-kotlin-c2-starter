@@ -12,7 +12,7 @@ class AsteroidsLocalDataSource(private val asteroidDao: AsteroidDao) {
     fun getWeeklyAsteroids(): Flow<List<Asteroid>> =
         asteroidDao.getAsteroidsBetween(
             DateUtils.getToday().time,
-            DateUtils.getDateAfter(Constants.DEFAULT_END_DATE_DAYS).time
+            DateUtils.getDateAfter(Constants.DEFAULT_END_DATE_DAYS).time - 1
         )
 
     fun getTodayAsteroids(): Flow<List<Asteroid>> =
