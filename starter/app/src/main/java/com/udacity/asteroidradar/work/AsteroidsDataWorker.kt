@@ -34,4 +34,8 @@ class AsteroidsDataWorker(appContext: Context, params: WorkerParameters) :
 
         return Result.success()
     }
+
+    companion object {
+        const val WORK_NAME = "AsteroidsDataWorker"
+    }
 }
