@@ -55,7 +55,7 @@ class MainFragment : Fragment() {
 
     private fun initObservables() {
         viewModel.asteroidsLiveData.observe(viewLifecycleOwner, Observer {
-            asteroidsAdapter.setAsteroids(it)
+            asteroidsAdapter.submitList(it)
         })
 
         viewModel.imageOfTheDayLiveData.observe(viewLifecycleOwner, Observer {
@@ -69,14 +69,14 @@ class MainFragment : Fragment() {
 
                         override fun onError() {
                             val failedToLoad = Constants.FAILED_TO_LOAD_IOD
-                            Timber.e(failedToLoad)
                             viewModel.setImageState(NetworkState.error(failedToLoad))
+                            Timber.e(failedToLoad)
                         }
                     })
             } else {
                 val imageOfDayNotAvailable = getString(R.string.image_of_the_day_not_an_image)
-                Timber.e(imageOfDayNotAvailable)
                 viewModel.setImageState(NetworkState.error(imageOfDayNotAvailable))
+                Timber.e(imageOfDayNotAvailable)
             }
         })
 

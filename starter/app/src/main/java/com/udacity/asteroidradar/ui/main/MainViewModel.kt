@@ -48,8 +48,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun Flow<List<Asteroid>>.observeChanges() = onStart {
         _asteroidsStateLiveData.postValue(NetworkState.LOADING)
     }.catch {
-        Timber.e(it)
         _asteroidsStateLiveData.postValue(NetworkState.error(Constants.FAILED_TO_LOAD_ASTEROIDS))
+        Timber.e(it)
     }.collect {
         _asteroidsLiveData.postValue(it)
         _asteroidsStateLiveData.postValue(NetworkState.LOADED)
@@ -71,8 +71,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         asteroidsRepository.getImageOfTheDay().onStart {
             _imageStateLiveData.postValue(NetworkState.LOADING)
         }.catch {
-            Timber.e(it)
             _imageStateLiveData.postValue(NetworkState.error(Constants.FAILED_TO_LOAD_IOD))
+            Timber.e(it)
         }.collect {
             _imageOfTheDayLiveData.postValue(it)
         }
